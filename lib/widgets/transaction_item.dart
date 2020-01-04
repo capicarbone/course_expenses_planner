@@ -1,10 +1,12 @@
+import 'dart:math';
+
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 
 import '../models/transaction.dart';
 
 
-class TransactionItem extends StatelessWidget {
+class TransactionItem extends StatefulWidget {
   const TransactionItem({
     Key key,
     @required this.tx,
@@ -15,40 +17,57 @@ class TransactionItem extends StatelessWidget {
   final Function deleteTransactionListener;
 
   @override
+  _TransactionItemState createState() => _TransactionItemState();
+}
+
+class _TransactionItemState extends State<TransactionItem> {
+
+  Color _bgColor;
+
+  @override
+  void initState() {
+    const avalibleColors = [Colors.red, Colors.black, Colors.blue, Colors.purple];
+    _bgColor = avalibleColors[Random().nextInt(4)];
+    super.initState();
+
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 8,
       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
       child: ListTile(
         leading: CircleAvatar(
+          backgroundColor: _bgColor,
           radius: 30,
           child: Padding(
             padding: EdgeInsets.all(6),
             child: FittedBox(
               child: Text(
-                '\$${tx.amount.toStringAsFixed(2)}',
+                '\$${widget.tx.amount.toStringAsFixed(2)}',
               ),
             ),
           ),
         ),
         title: Text(
-          tx.title,
+          widget.tx.title,
           style: Theme.of(context).textTheme.title,
         ),
         subtitle: Text(
-          DateFormat.yMMMd().format(tx.date),
+          DateFormat.yMMMd().format(widget.tx.date),
         ),
         trailing: MediaQuery.of(context).size.width > 400
             ? FlatButton.icon(
                 textColor: Theme.of(context).errorColor,
                 icon: Icon(Icons.delete),
                 label: Text('Delete'),
-                onPressed: () => deleteTransactionListener(tx.id),
+                onPressed: () => widget.deleteTransactionListener(widget.tx.id),
               )
             : IconButton(
                 icon: Icon(Icons.delete),
                 color: Theme.of(context).errorColor,
-                onPressed: () => deleteTransactionListener(tx.id)),
+                onPressed: () => widget.deleteTransactionListener(widget.tx.id)),
       ),
     );
   }
